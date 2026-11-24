@@ -48,6 +48,7 @@ namespace BwuiSample
         }
 
         protected override WidgetSize[] SupportedSizes { get { return new[] { WidgetSize.Regular, WidgetSize.Compact, WidgetSize.Wide }; } }
+        protected override UpdateSource Updates { get { return new UpdateSource("byeonggwan", "bwui", "BwuiDisk.exe"); } }
         protected override bool CanRefresh { get { return true; } }
         protected override void RefreshNow() { Load(); Render(); }
 

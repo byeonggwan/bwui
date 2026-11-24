@@ -16,7 +16,8 @@ BWUI is a small design system for always-on Windows desktop widgets. It is one s
   - has the standard right-click menu (refresh, size, theme, start with Windows, exit);
   - follows the Windows theme and High Contrast;
   - is per-monitor DPI aware;
-  - renders `--snapshot` previews.
+  - renders `--snapshot` previews;
+  - updates itself from GitHub Releases, notifying by default or installing automatically if you opt in.
 - **`Ui` components.** Header, icon button, text button, meter row, ring, status value with glyph, message, skeleton, divider.
 - **Small footprint.** Software rendering, no dependencies, about 55 MB of RAM. It builds with `csc.exe` from `C:\Windows\Microsoft.NET` (C# 5), with no SDK or installer.
 - **Korean and English** strings, plus relative-time formatting.
@@ -53,13 +54,31 @@ class MyWidget : BwuiWindow
 }
 ```
 
-3. Compile with the manifest, which turns on per-monitor DPI (see [`build.ps1`](build.ps1)):
+3. Add a `VERSION` file (for example `1.0.0`) and compile with the manifest, which turns on per-monitor DPI. The build writes the version into a one-line `AppInfo.g.cs`; see [`build.ps1`](build.ps1):
 
 ```powershell
-csc /target:winexe /codepage:65001 /win32manifest:BWUI\bwui.manifest /r:...WPF dlls... BWUI\*.cs MyWidget.cs
+Set-Content bin\AppInfo.g.cs "namespace Bwui { public static class AppInfo { public const string Version = `"$(Get-Content VERSION)`"; } }"
+csc /target:winexe /codepage:65001 /win32manifest:BWUI\bwui.manifest /r:...WPF dlls... /r:System.Web.Extensions.dll BWUI\*.cs bin\AppInfo.g.cs MyWidget.cs
 ```
 
 4. Go through the checklist in [DESIGN.md §2](DESIGN.md#2-minimum-checklist).
+
+## Updates
+
+A widget can update itself from its GitHub Releases. Override one property:
+
+```csharp
+protected override UpdateSource Updates
+{
+    get { return new UpdateSource("owner", "repo", "MyWidget.exe"); }
+}
+```
+
+Then copy [`.github/workflows/release.yml`](.github/workflows/release.yml), set its `FILES`, and push a tag such as `v1.0.1` that matches `VERSION`. The workflow builds on a Windows runner and publishes each file with a `.sha256`.
+
+Once a day the widget checks the latest release. If there's a newer one, it shows an update bar, and one click downloads it, checks the SHA-256, swaps the exe and restarts. Settings and position stay as they were. **Update automatically** in the right-click menu installs updates without asking. The details are in [DESIGN.md §6.10](DESIGN.md#610-updates).
+
+![Update bar](docs/sample-update-light.png)
 
 ## Sample
 

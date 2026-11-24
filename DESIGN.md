@@ -42,6 +42,7 @@ Run through this before you publish a widget.
 | C16 | Refreshes half as often on battery | SHOULD | Apple, Android, Microsoft battery guidance |
 | C17 | Offers more than one size if a larger size shows more, not just bigger text | SHOULD | All three |
 | C18 | Interactive elements have an accessible name | SHOULD | Apple, Android |
+| C19 | Published widgets update from GitHub Releases: notify by default, auto install opt-in, SHA-256 checked (§6.10) | SHOULD | Keeps BWUI fixes reaching users |
 
 ---
 
@@ -203,8 +204,9 @@ The menu has the BWUI style: `Surface`, radius 8, `Body` text, a check column. T
 4. **Size: …** (if more than one size; clicking cycles through them)
 5. **Theme: System / Light / Dark** (clicking cycles through them)
 6. **Start with Windows** (checkable; `HKCU\…\Run`, value = AppId)
-7. separator
-8. **Exit**
+7. separator, then **Check for updates** / **Install update (vX.Y.Z)** and **Update automatically** (only if the widget has an update source, §6.10)
+8. separator
+9. **Exit**
 
 ### 6.4 Refresh (C12, C16)
 - Local reads, such as a file or `DriveInfo`, can run on any timer of 30s or longer.
@@ -230,6 +232,24 @@ The app manifest declares `PerMonitorV2` (`BWUI/bwui.manifest`), and the assembl
 
 ### 6.9 Snapshot (C15)
 `<exe> --snapshot <file.png> [light|dark]` renders the card on a desk-colored background at 2× and exits. Widgets feed it sample or cached data, so the image looks real.
+
+### 6.10 Updates
+A widget that sets `Updates` (an `UpdateSource`: owner, repo, files) updates from its GitHub Releases.
+
+- **Version.** The repo's `VERSION` file is the app version. `build.ps1` compiles it into `Bwui.AppInfo.Version`, and release tags are `v` + that version.
+- **Releases.** Pushing a tag runs `.github/workflows/release.yml`, which builds on a Windows runner and publishes every file with a `.sha256` next to it.
+- **Check.** One unauthenticated request to `api.github.com/repos/<owner>/<repo>/releases/latest`, a minute after start and then once a day. The User-Agent is the generic `BWUI-Updater`; nothing about the user is sent. A failed background check stays silent.
+- **Notify (default).** When a newer release exists, an update bar appears under the content: `Caption` "New version vX.Y.Z" with an **Update** TextButton. Narrow widgets (under 160px) get a single download IconButton instead. The menu shows **Install update (vX.Y.Z)** in place of **Check for updates**.
+- **Auto (opt-in).** With **Update automatically** checked, a found update installs right away, with no prompt.
+- **Install.**
+  1. Download each file over HTTPS from `github.com` and check its SHA-256, taken from GitHub's asset digest or the `.sha256` asset.
+  2. A missing or wrong hash means nothing is installed.
+  3. Rename the running files to `*.old`, move the new ones in, and restart with `--after-update <pid>`. The new process waits for the old one to exit, then deletes the `*.old` files.
+  4. If a move fails, the old files are put back and the bar says why.
+- **Scope.** Only the installed copy (`%LOCALAPPDATA%\<AppId>`) updates itself; a build run from `bin\` never does. Settings, caches and position are untouched.
+- **Limits.** The hash proves the file wasn't corrupted or swapped in transit, not who built it. That trust comes from the GitHub repo. The exes are unsigned, so SmartScreen may warn the first time a downloaded copy runs.
+
+The menu's updates block sits after **Start with Windows**: **Check for updates** (or **Install update**), then **Update automatically**.
 
 ---
 

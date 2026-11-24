@@ -8,10 +8,14 @@ $fw = 'C:\Windows\Microsoft.NET\Framework64\v4.0.30319'
 $out = Join-Path $PSScriptRoot 'bin'
 New-Item -ItemType Directory -Force $out | Out-Null
 
-$refs = 'WPF\PresentationFramework.dll', 'WPF\PresentationCore.dll', 'WPF\WindowsBase.dll', 'System.Xaml.dll' |
+$refs = 'WPF\PresentationFramework.dll', 'WPF\PresentationCore.dll', 'WPF\WindowsBase.dll', 'System.Xaml.dll', 'System.Web.Extensions.dll' |
     ForEach-Object { "/r:$fw\$_" }
 $src = @(Get-ChildItem "$PSScriptRoot\BWUI\*.cs") + @(Get-ChildItem "$PSScriptRoot\sample\*.cs") | ForEach-Object { $_.FullName }
 $exe = Join-Path $out 'BwuiDisk.exe'
+# The app version comes from BWUI\VERSION (the sample ships with BWUI); release tags must match it.
+$version = (Get-Content "$PSScriptRoot\BWUI\VERSION").Trim()
+Set-Content "$out\AppInfo.g.cs" "namespace Bwui { public static class AppInfo { public const string Version = `"$version`"; } }" -Encoding utf8
+$src += "$out\AppInfo.g.cs"
 
 Get-Process BwuiDisk -ErrorAction SilentlyContinue | Stop-Process -Force
 & "$fw\csc.exe" /nologo /codepage:65001 /optimize+ /target:winexe "/win32manifest:$PSScriptRoot\BWUI\bwui.manifest" "/out:$exe" @refs @src
@@ -24,7 +28,8 @@ if ($Snapshots) {
     $jobs = @(
         @('sample-light.png', 'light'), @('sample-dark.png', 'dark'),
         @('sample-rings-light.png', 'light', 'ring'), @('sample-rings-dark.png', 'dark', 'ring'),
-        @('gallery-light.png', 'light', 'gallery'), @('gallery-dark.png', 'dark', 'gallery'))
+        @('gallery-light.png', 'light', 'gallery'), @('gallery-dark.png', 'dark', 'gallery'),
+        @('sample-update-light.png', 'light', 'update'))
     foreach ($j in $jobs) {
         $a = @('--snapshot', (Join-Path $docs $j[0])) + $j[1..($j.Count - 1)]
         Start-Process $exe -ArgumentList $a -Wait
