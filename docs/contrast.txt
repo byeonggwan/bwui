@@ -1,0 +1,20 @@
+[light]
+TextPrimary / Surface                 16.66  need 4.5  ok
+TextSecondary / Surface                5.49  need 4.5  ok
+TextTertiary / Surface                 4.66  need 4.5  ok
+TextSecondary / SurfaceSubtle          4.95  need 4.5  ok
+TextPrimary / SurfaceHover            13.46  need 4.5  ok
+Caution / Surface                      5.25  need 4.5  ok
+Critical / Surface                     5.66  need 4.5  ok
+Success / Surface                      5.44  need 4.5  ok
+
+[dark]
+TextPrimary / Surface                 12.80  need 4.5  ok
+TextSecondary / Surface                7.46  need 4.5  ok
+TextTertiary / Surface                 5.55  need 4.5  ok
+TextSecondary / SurfaceSubtle          6.20  need 4.5  ok
+TextPrimary / SurfaceHover             8.81  need 4.5  ok
+Caution / Surface                     10.86  need 4.5  ok
+Critical / Surface                     7.06  need 4.5  ok
+Success / Surface                      7.06  need 4.5  ok
+
