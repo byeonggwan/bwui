@@ -17,7 +17,7 @@ BWUI is a small design system for always-on Windows desktop widgets. It is one s
   - follows the Windows theme and High Contrast;
   - is per-monitor DPI aware;
   - renders `--snapshot` previews;
-  - updates itself from GitHub Releases, notifying by default or installing automatically if you opt in.
+  - updates itself from GitHub Releases, shown only in the right-click menu, and can install automatically if you opt in.
 - **`Ui` components.** Header, icon button, text button, meter row, ring, status value with glyph, message, skeleton, divider.
 - **Small footprint.** Software rendering, no dependencies, about 55 MB of RAM. It builds with `csc.exe` from `C:\Windows\Microsoft.NET` (C# 5), with no SDK or installer.
 - **Korean and English** strings, plus relative-time formatting.
@@ -76,9 +76,10 @@ protected override UpdateSource Updates
 
 Then copy [`.github/workflows/release.yml`](.github/workflows/release.yml), set its `FILES`, and push a tag such as `v1.0.1` that matches `VERSION`. The workflow builds on a Windows runner and publishes each file with a `.sha256`.
 
-Once a day the widget checks the latest release. If there's a newer one, it shows an update bar, and one click downloads it, checks the SHA-256, swaps the exe and restarts. Settings and position stay as they were. **Update automatically** in the right-click menu installs updates without asking. The details are in [DESIGN.md §6.10](DESIGN.md#610-updates).
+Updates never show on the widget itself, only in the right-click menu.
 
-![Update bar](docs/sample-update-light.png)
+- **Manual (default):** **Check for updates (current vX.Y.Z)** checks the latest release. If it's newer, the same item turns into **Install update (vX.Y.Z)**. That click downloads it, checks the SHA-256, swaps the exe and restarts, keeping your settings and position.
+- **Automatic (opt-in):** while **Update automatically** is checked, the widget checks once a day and installs without asking. With it off, nothing runs in the background. The details are in [DESIGN.md §6.10](DESIGN.md#610-updates).
 
 ## Sample
 

@@ -238,14 +238,19 @@ A widget that sets `Updates` (an `UpdateSource`: owner, repo, files) updates fro
 
 - **Version.** The repo's `VERSION` file is the app version. `build.ps1` compiles it into `Bwui.AppInfo.Version`, and release tags are `v` + that version.
 - **Releases.** Pushing a tag runs `.github/workflows/release.yml`, which builds on a Windows runner and publishes every file with a `.sha256` next to it.
-- **Check.** One unauthenticated request to `api.github.com/repos/<owner>/<repo>/releases/latest`, a minute after start and then once a day. The User-Agent is the generic `BWUI-Updater`; nothing about the user is sent. A failed background check stays silent.
-- **Notify (default).** When a newer release exists, an update bar appears under the content: `Caption` "New version vX.Y.Z" with an **Update** TextButton. Narrow widgets (under 160px) get a single download IconButton instead. The menu shows **Install update (vX.Y.Z)** in place of **Check for updates**.
-- **Auto (opt-in).** With **Update automatically** checked, a found update installs right away, with no prompt.
+- **Where it shows.** Update state appears **only in the right-click menu**. The widget face never shows an update bar, badge or dot (MUST).
+- **Manual (default).** Nothing runs in the background. The menu shows **Check for updates (current vX.Y.Z)**, and clicking it makes one unauthenticated request to `api.github.com/repos/<owner>/<repo>/releases/latest`. The menu stays open while the same item changes:
+  - **Checking…**, then
+  - **Install update (vX.Y.Z)**, which installs when clicked, or
+  - **Up to date (vX.Y.Z)**, or
+  - **Couldn't update · Retry**, with the reason as a tooltip.
+- **Auto (opt-in).** Only while **Update automatically** is checked, the widget checks a minute after start and then once a day, and installs a newer release without asking. Turning the option on checks right away. A failed background check stays silent.
+- **Privacy.** The User-Agent is the generic `BWUI-Updater`; nothing about the user is sent.
 - **Install.**
   1. Download each file over HTTPS from `github.com` and check its SHA-256, taken from GitHub's asset digest or the `.sha256` asset.
   2. A missing or wrong hash means nothing is installed.
   3. Rename the running files to `*.old`, move the new ones in, and restart with `--after-update <pid>`. The new process waits for the old one to exit, then deletes the `*.old` files.
-  4. If a move fails, the old files are put back and the bar says why.
+  4. If a move fails, the old files are put back and the menu item says why.
 - **Scope.** Only the installed copy (`%LOCALAPPDATA%\<AppId>`) updates itself; a build run from `bin\` never does. Settings, caches and position are untouched.
 - **Limits.** The hash proves the file wasn't corrupted or swapped in transit, not who built it. That trust comes from the GitHub repo. The exes are unsigned, so SmartScreen may warn the first time a downloaded copy runs.
 

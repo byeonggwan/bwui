@@ -28,8 +28,7 @@ if ($Snapshots) {
     $jobs = @(
         @('sample-light.png', 'light'), @('sample-dark.png', 'dark'),
         @('sample-rings-light.png', 'light', 'ring'), @('sample-rings-dark.png', 'dark', 'ring'),
-        @('gallery-light.png', 'light', 'gallery'), @('gallery-dark.png', 'dark', 'gallery'),
-        @('sample-update-light.png', 'light', 'update'))
+        @('gallery-light.png', 'light', 'gallery'), @('gallery-dark.png', 'dark', 'gallery'))
     foreach ($j in $jobs) {
         $a = @('--snapshot', (Join-Path $docs $j[0])) + $j[1..($j.Count - 1)]
         Start-Process $exe -ArgumentList $a -Wait
