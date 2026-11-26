@@ -17,7 +17,8 @@ BWUI is a small design system for always-on Windows desktop widgets. It is one s
   - follows the Windows theme and High Contrast;
   - is per-monitor DPI aware;
   - renders `--snapshot` previews;
-  - updates itself from GitHub Releases, shown only in the right-click menu, and can install automatically if you opt in.
+  - updates itself from GitHub Releases, shown only in the right-click menu, and can install automatically if you opt in;
+  - can be managed from [BWHub](https://github.com/byeonggwan/bwhub): lifted above other windows on a hotkey, its theme and size changed live, its menu opened remotely ([DESIGN.md §6.11](DESIGN.md#611-remote-control-bwhub)).
 - **`Ui` components.** Header, icon button, text button, meter row, ring, status value with glyph, message, skeleton, divider.
 - **Small footprint.** Software rendering, no dependencies, about 55 MB of RAM. It builds with `csc.exe` from `C:\Windows\Microsoft.NET` (C# 5), with no SDK or installer.
 - **Korean and English** strings, plus relative-time formatting.
@@ -108,6 +109,9 @@ Every BWUI widget gets these:
 
 - [windows-ai-usage-widget](https://github.com/byeonggwan/windows-ai-usage-widget): Claude, Codex and Antigravity usage limits
 - [windows-game-patchnote-widget](https://github.com/byeonggwan/windows-game-patchnote-widget): game patch notes
+- [windows-today-calendar-widget](https://github.com/byeonggwan/windows-today-calendar-widget): today's events from every Google account
+
+[BWHub](https://github.com/byeonggwan/bwhub) installs, updates and sets up these widgets in one window.
 
 ## Versioning
 

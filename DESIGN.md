@@ -256,6 +256,14 @@ A widget that sets `Updates` (an `UpdateSource`: owner, repo, files) updates fro
 
 The menu's updates block sits after **Start with Windows**: **Check for updates** (or **Install update**), then **Update automatically**.
 
+### 6.11 Remote control (BWHub)
+BWHub, the manager app, lists, installs and sets up widgets, and lifts them above other windows on a hotkey. `BwuiWindow` handles all of this; widgets need no code (`Bwui.Remote`).
+- **Finding widgets.** Every widget window has the window property `BWUI.Widget` (`EnumWindows` + `GetProp`).
+- **Version.** The exe's product version (`AssemblyInformationalVersion`) is `AppInfo.Version`, so the manager can read the installed version without running it.
+- **Peek.** The manager posts the registered message `BWUI.Peek.v1` to each widget window: `wParam` 1 lifts, 0 returns. Lifted, the widget drops its desktop owner and becomes topmost without taking focus; back on the desktop it is non-topmost, owned by the desktop again, and at the bottom. The manager decides when a peek ends, and puts all widgets back when it starts, in case it crashed mid-peek.
+- **Commands.** `BWUI.Command.v1` with `wParam` 1 (*reload settings*): the manager changed `settings.txt` (`theme`, `size`, `update_auto`), so the widget reads it again and re-renders. `wParam` 2 (*show menu*): the widget opens its right-click menu below itself, for widget-specific items such as accounts.
+- A widget never sends anything back; the manager reads `settings.txt`, the Run key and the exe version.
+
 ---
 
 ## 7. Accessibility (C2, C3, C18)
